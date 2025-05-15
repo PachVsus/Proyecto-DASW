@@ -45,49 +45,108 @@
     }
   </style>
 </head>
-<body>
-
-<div class="login-container">
-  <h2>Iniciar Sesión</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Correo electrónico" required />
-    <input type="password" id="password" placeholder="Contraseña" required />
-    <button type="submit">Entrar</button>
-  </form>
-</div>
-
-<script>
-  const API_BASE = 'http://127.0.0.1:5000';
-
-  const form = document.getElementById('loginForm');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = form.email.value;
-    const password = form.password.value;
-
-    try {
-      const res = await fetch(`${API_BASE}/api/users/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
-      }
-
-      localStorage.setItem('token', data.token);
-
-    Swal.fire('¡Bienvenido!', 'Inicio de sesión exitoso.', 'success')
-      .then(() => window.location.href = 'Proyecto de programacion web/version_final/products_index.html');
-    } catch (err) {
-      Swal.fire('Error', err.message, 'error');
-    }
-  });
-</script>
-
+<body class="bg-gray-100">
+    <header class="bg-white shadow-md py-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-2xl font-bold text-primary">Meshify</h1>
+            <nav class="hidden md:flex space-x-6">
+                <li style="display: inline; margin-right: 10px;"><a href="index.html">Inicio</a></li>
+                <li style="display: inline; margin-right: 10px;"><a href="products_index.html">Productos</a></li>
+                <li style="display: inline; margin-right: 10px;"><a href="about_of.html">Acerca de</a></li>
+                <li style="display: inline; margin-right: 10px;"><a href="contact.html">Contacto</a></li>
+                <li style="display: inline; margin-right: 10px;"><a href="login.html">Cuenta</a></li>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/150" class="rounded-circle mb-3 border" alt="Foto de perfil">
+                        <h5 class="card-title">Nombre del Usuario</h5>
+                        <p class="text-muted">usuario@example.com</p>
+                        <button class="btn btn-primary" onclick="openModal('Editar Perfil', ['Nombre', 'Correo Electrónico'])">Editar Perfil</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="accordion" id="ordersAccordion">
+                    <div class="card mb-3 shadow">
+                        <div class="card-header bg-primary text-white" id="order1Heading">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link text-white" type="button" data-bs-toggle="collapse" data-bs-target="#order1" aria-expanded="true" aria-controls="order1">
+                                    Pedido #2001 - Total: $49.99
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="order1" class="collapse show" aria-labelledby="order1Heading" data-bs-parent="#ordersAccordion">
+                            <div class="card-body">
+                                <div class="d-flex mb-2">
+                                    <img src="https://via.placeholder.com/100" alt="Modelo 3D" class="me-3">
+                                    <div>
+                                        <strong>Modelo 3D: Auto Futurista</strong>
+                                        <p>Cantidad: 1</p>
+                                        <p><strong>Precio: $49.99</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-3 shadow bg-light">
+                    <div class="card-header text-dark">Métodos de Pago</div>
+                    <div class="card-body">
+                        <p>Tarjeta registrada: **** **** **** 5678</p>
+                        <button class="btn btn-primary" onclick="openModal('Agregar Método de Pago', ['Número de Tarjeta', 'Fecha de Expiración', 'CVV'])">Agregar Método de Pago</button>
+                    </div>
+                </div>
+                <div class="card shadow bg-light">
+                    <div class="card-header text-dark">Facturación</div>
+                    <div class="card-body">
+                        <p>RFC: XXXXXXXXXX</p>
+                        <button class="btn btn-primary" onclick="openModal('Actualizar Datos de Facturación', ['RFC', 'Dirección Fiscal'])">Actualizar Datos de Facturación</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-secondary text-white text-center py-3 mt-4">
+        &copy; 2025 Meshify. Todos los derechos reservados.
+    </footer>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modalForm">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openModal(title, fields) {
+            document.getElementById("formModalLabel").innerText = title;
+            let form = document.getElementById("modalForm");
+            form.innerHTML = "";
+            fields.forEach(field => {
+                form.innerHTML += `<label class='form-label'>${field}</label><input type='text' class='form-control mb-2' name='${field}'>`;
+            });
+            form.innerHTML += "<button type='submit' class='btn btn-primary w-100'>Guardar</button>";
+            var modal = new bootstrap.Modal(document.getElementById("formModal"));
+            modal.show();
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
