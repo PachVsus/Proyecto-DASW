@@ -30,7 +30,12 @@
                         <img src="https://via.placeholder.com/150" class="rounded-circle mb-3 border" alt="Foto de perfil">
                         <h5 class="card-title">Nombre del Usuario</h5>
                         <p class="text-muted">usuario@example.com</p>
-                        <button class="btn btn-primary" onclick="openModal('Editar Perfil', ['Nombre', 'Correo Electrónico'])">Editar Perfil</button>
+                        <button class="btn btn-primary" 
+                                onclick="openModal('Editar Perfil', 
+                                        ['Nombre', 'Correo Electrónico'], 
+                                        ['.card-title', '.text-muted'])">
+                            Editar Perfil
+                        </button>
                     </div>
                 </div>
             </div>
@@ -61,15 +66,25 @@
                 <div class="card mb-3 shadow bg-light">
                     <div class="card-header text-dark">Métodos de Pago</div>
                     <div class="card-body">
-                        <p>Tarjeta registrada: **** **** **** 5678</p>
-                        <button class="btn btn-primary" onclick="openModal('Agregar Método de Pago', ['Número de Tarjeta', 'Fecha de Expiración', 'CVV'])">Agregar Método de Pago</button>
+                        <p class="card-text">Tarjeta registrada: **** **** **** 5678</p>
+                        <button class="btn btn-primary" 
+                                onclick="openModal('Agregar Método de Pago', 
+                                        ['Número de Tarjeta', 'Fecha de Expiración', 'CVV'], 
+                                        ['.card-body .card-text'])">
+                            Agregar Método de Pago
+                        </button>
                     </div>
                 </div>
                 <div class="card shadow bg-light">
                     <div class="card-header text-dark">Facturación</div>
                     <div class="card-body">
-                        <p>RFC: XXXXXXXXXX</p>
-                        <button class="btn btn-primary" onclick="openModal('Actualizar Datos de Facturación', ['RFC', 'Dirección Fiscal'])">Actualizar Datos de Facturación</button>
+                        <p class="rfc-text">RFC: XXXXXXXXXX</p>
+                        <button class="btn btn-primary" 
+                                onclick="openModal('Actualizar Datos de Facturación', 
+                                        ['RFC', 'Dirección Fiscal'], 
+                                        ['.rfc-text'])">
+                            Actualizar Datos de Facturación
+                        </button>
                     </div>
                 </div>
             </div>
@@ -97,16 +112,59 @@
     </div>
     
     <script>
-        function openModal(title, fields) {
+        function openModal(title, fields, targetElements) {
             document.getElementById("formModalLabel").innerText = title;
             let form = document.getElementById("modalForm");
             form.innerHTML = "";
-            fields.forEach(field => {
-                form.innerHTML += `<label class='form-label'>${field}</label><input type='text' class='form-control mb-2' name='${field}'>`;
+            
+            form.dataset.targets = JSON.stringify(targetElements);
+            
+            fields.forEach((field, index) => {
+                let currentValue = "";
+                if (targetElements && targetElements[index]) {
+                    const targetElement = document.querySelector(targetElements[index]);
+                    if (targetElement) {
+                        if (targetElement.innerText.includes(":")) {
+                            currentValue = targetElement.innerText.split(":")[1].trim();
+                        } else {
+                            currentValue = targetElement.innerText;
+                        }
+                    }
+                }
+                
+                form.innerHTML += `
+                    <label class='form-label'>${field}</label>
+                    <input type='text' class='form-control mb-2' name='${field}' value="${currentValue}">
+                `;
             });
-            form.innerHTML += "<button type='submit' class='btn btn-primary w-100'>Guardar</button>";
+            
+            form.innerHTML += `<button type='button' class='btn btn-primary w-100' onclick='saveChanges()'>Guardar</button>`;
+            
             var modal = new bootstrap.Modal(document.getElementById("formModal"));
             modal.show();
+        }
+        
+        function saveChanges() {
+            const form = document.getElementById("modalForm");
+            const inputs = form.querySelectorAll('input');
+            const targets = JSON.parse(form.dataset.targets || "[]");
+            
+            inputs.forEach((input, index) => {
+                if (targets[index]) {
+                    const targetElement = document.querySelector(targets[index]);
+                    if (targetElement) {
+                        if (targetElement.innerText.includes(":")) {
+                            const prefix = targetElement.innerText.split(":")[0] + ": ";
+                            targetElement.innerText = prefix + input.value;
+                        } else {
+                            targetElement.innerText = input.value;
+                        }
+                    }
+                }
+            });
+            
+            var modal = bootstrap.Modal.getInstance(document.getElementById("formModal"));
+            modal.hide();
         }
     </script>
     
