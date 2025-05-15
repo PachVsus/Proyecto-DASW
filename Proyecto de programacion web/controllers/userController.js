@@ -61,9 +61,10 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: user._id, // debe ser _id
+        id: user._id, // Aquí usas el _id de MongoDB y lo guardas como 'id'
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role // (opcional, si necesitas el rol en el token)
       },
       process.env.JWT_SECRET || 'mi_clave_secreta', // valor por defecto si no está en .env
       { expiresIn: '1h' }

@@ -6,8 +6,9 @@ exports.verifyToken = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   try {
+    // Usa el mismo secreto que en userController.js
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_clave_secreta');
-    req.user = decoded;
+    req.user = decoded; // decoded debe tener el campo id
     next();
   } catch {
     return res.status(401).json({ message: 'Token inválido' });
