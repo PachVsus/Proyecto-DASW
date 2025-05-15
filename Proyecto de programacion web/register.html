@@ -58,20 +58,20 @@
 </div>
 
 <script>
+  const API_BASE = 'http://127.0.0.1:5000';
+
   const form = document.getElementById('registerForm');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
 
     try {
-      const res = await fetch('http://localhost:3000/api/users/register', {
+      const res = await fetch(`${API_BASE}/api/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
       });
 
@@ -82,8 +82,9 @@
       }
 
       localStorage.setItem('token', data.token);
+
       Swal.fire('¡Registro exitoso!', 'Bienvenido a Meshify.', 'success')
-        .then(() => window.location.href = 'main.html');
+        .then(() => window.location.href = 'products_index.html');
     } catch (err) {
       Swal.fire('Error', err.message, 'error');
     }
