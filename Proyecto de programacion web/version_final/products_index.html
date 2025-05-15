@@ -12,121 +12,130 @@
 </head>
 <body class="bg-gray-100">
 
-    <header class="bg-white shadow-md py-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center px-6">
-            <h1 class="text-2xl font-bold text-primary">Meshify</h1>
-            <nav class="hidden md:flex space-x-6 bg-white">
-                <li style="display: inline; margin-right: 10px;"><a href="index.html">Inicio</a></li>
-                <li style="display: inline; margin-right: 10px;"><a href="products_index.html">Productos</a></li>
-                <li style="display: inline; margin-right: 10px;"><a href="about_of.html">Acerca de</a></li>
-                <li style="display: inline; margin-right: 10px;"><a href="contact.html">Contacto</a></li>
-                <li style="display: inline; margin-right: 10px;"><a href="login.html">Cuenta</a></li>
-            </nav>
-            <div class="flex items-center space-x-4">
-                <button class="relative bg-black text-white px-4 py-2 rounded-md flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M16 6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V6zM6 4a4 4 0 00-4 4v8a4 4 0 004 4h8a4 4 0 004-4V8a4 4 0 00-4-4H6z" />
-                    </svg>
-                    Cart <span id="cart-count" class="bg-red-500 text-white text-xs rounded-full px-2 absolute -top-2 -right-2">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <div class="container mx-auto p-6">
-        <!-- Formulario para agregar nuevo producto -->
-        <form id="newForm" class="max-w-xl mx-auto my-4 grid grid-cols-1 sm:grid-cols-4 gap-2">
-            <input id="nName"  class="border p-2 rounded" placeholder="Nombre" required>
-            <input id="nPrice" class="border p-2 rounded" placeholder="Precio" type="number" min="1" required>
-            <input id="nImg"   class="border p-2 rounded" placeholder="URL imagen" required>
-            <button class="bg-green-600 text-white rounded px-4">Agregar</button>
-        </form>
-        <div class="flex justify-center">
-            <input type="text" id="search-bar" placeholder="Buscar productos..." class="border p-2 rounded-md w-64">
-        </div>
+<header class="bg-white shadow-md py-4 sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <h1 class="text-2xl font-bold text-primary">Meshify</h1>
+        <nav class="hidden md:flex space-x-6 bg-white">
+            <li style="display: inline; margin-right: 10px;"><a href="index.html">Inicio</a></li>
+            <li style="display: inline; margin-right: 10px;"><a href="products_index.html">Productos</a></li>
+            <li style="display: inline; margin-right: 10px;"><a href="about_of.html">Acerca de</a></li>
+            <li style="display: inline; margin-right: 10px;"><a href="contact.html">Contacto</a></li>
+            <li style="display: inline; margin-right: 10px;"><a href="login.html">Cuenta</a></li>
+        </nav>
     </div>
+</header>
 
-    <main class="container mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6" id="products-list">
-        <!-- Productos se cargan dinámicamente -->
-    </main>
+<div class="container mx-auto p-6">
+    <div class="flex justify-center mb-4">
+        <input type="text" id="search-bar" placeholder="Buscar productos..." class="border p-2 rounded-md w-64">
+    </div>
+</div>
 
-    <footer class="bg-white text-center py-4 mt-10">
-        &copy; 2025 Meshify. Todos los derechos reservados.
-    </footer>
+<main class="container mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6" id="products-list">
+    <!-- Productos cargados dinámicamente -->
+</main>
 
-    <script>
-        async function fetchProducts() {
-            const token = localStorage.getItem('token');
+<footer class="bg-white text-center py-4 mt-10">
+    &copy; 2025 Meshify. Todos los derechos reservados.
+</footer>
 
-            try {
-                const res = await fetch('http://localhost:3000/api/products', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+<script>
+    const API_BASE = 'http://127.0.0.1:5000';
 
-                if (!res.ok) throw new Error('Error al cargar productos');
-
-                const products = await res.json();
-                renderProducts(products);
-            } catch (err) {
-                Swal.fire('Error', err.message, 'error');
-            }
-        }
-
-        function renderProducts(products) {
-    const container = document.getElementById('products-list');
-    container.innerHTML = '';
-
-    products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-item bg-white p-4 rounded-md shadow-md';
-        card.innerHTML = `
-            <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}" class="w-full h-48 object-cover rounded-md">
-            <h2 class="text-lg font-semibold mt-2" style="font-family: 'Monocraft', monospace;">${product.name}</h2>
-            <p class="text-gray-600">${product.description}</p>
-            <div class="flex justify-between items-center mt-2">
-                <span class="text-primary font-bold text-lg">$${product.price}</span>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-                <button onclick="window.location.href='edit_product.html?id=${product._id}'" class="text-blue-600 hover:underline">Editar</button>
-                <button onclick="deleteProduct('${product._id}')" class="text-red-600 hover:underline">Eliminar</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-
-        async function deleteProduct(id) {
-            const token = localStorage.getItem('token');
-            if (!confirm('¿Eliminar este producto?')) return;
-
-            try {
-                const res = await fetch(`http://localhost:3000/api/products/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (!res.ok) throw new Error('Error al eliminar producto');
-                
-                Swal.fire('Eliminado', 'Producto eliminado exitosamente', 'success');
-                fetchProducts(); // Recargar productos
-            } catch (err) {
-                Swal.fire('Error', err.message, 'error');
-            }
-        }
-
-        // Búsqueda en vivo
-        document.getElementById('search-bar').addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase();
-            document.querySelectorAll('.product-item').forEach(item => {
-                const productName = item.querySelector('h2').textContent.toLowerCase();
-                item.style.display = productName.includes(searchValue) ? 'block' : 'none';
+    async function verifyBackendAndToken() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            Swal.fire('Error', 'No has iniciado sesión', 'error').then(() => {
+                window.location.href = 'login.html';
             });
-        });
+            throw new Error('Token no encontrado');
+        }
 
-        fetchProducts();
-    </script>
-<script type="module" src="../frontend/js/products.js"></script>
+        try {
+            const res = await fetch(`${API_BASE}/api/verify`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.status === 401) {
+                Swal.fire('Sesión expirada', 'Por favor inicia sesión de nuevo', 'warning')
+                    .then(() => window.location.href = 'login.html');
+                throw new Error('Token inválido');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Backend no disponible', 'error');
+            throw new Error('Backend no disponible');
+        }
+    }
+
+    async function fetchProducts() {
+        const token = localStorage.getItem('token');
+
+        try {
+            const res = await fetch(`${API_BASE}/api/products`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error('Error al cargar productos');
+
+            const products = await res.json();
+            renderProducts(products);
+        } catch (err) {
+            Swal.fire('Error', err.message, 'error');
+        }
+    }
+
+    function renderProducts(products) {
+        const container = document.getElementById('products-list');
+        container.innerHTML = '';
+
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-item bg-white p-4 rounded-md shadow-md';
+            card.innerHTML = `
+                <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}" class="w-full h-48 object-cover rounded-md">
+                <h2 class="text-lg font-semibold mt-2" style="font-family: 'Monocraft', monospace;">${product.name}</h2>
+                <p class="text-gray-600">${product.description}</p>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-primary font-bold text-lg">$${product.price}</span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <button onclick="window.location.href='edit_product.html?id=${product._id}'" class="text-blue-600 hover:underline">Editar</button>
+                    <button onclick="deleteProduct('${product._id}')" class="text-red-600 hover:underline">Eliminar</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    async function deleteProduct(id) {
+        const token = localStorage.getItem('token');
+        if (!confirm('¿Eliminar este producto?')) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/products/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error('Error al eliminar producto');
+
+            Swal.fire('Eliminado', 'Producto eliminado exitosamente', 'success');
+            fetchProducts();
+        } catch (err) {
+            Swal.fire('Error', err.message, 'error');
+        }
+    }
+
+    document.getElementById('search-bar').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        document.querySelectorAll('.product-item').forEach(item => {
+            const productName = item.querySelector('h2').textContent.toLowerCase();
+            item.style.display = productName.includes(searchValue) ? 'block' : 'none';
+        });
+    });
+
+    // Inicializar
+    verifyBackendAndToken().then(fetchProducts);
+</script>
 
 </body>
 </html>
