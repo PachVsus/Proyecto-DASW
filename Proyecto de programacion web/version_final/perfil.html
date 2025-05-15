@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Cuenta - Meshify</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <link rel="stylesheet" href="main_styles.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 2rem;
+    }
+    .profile-card {
+      background: #1f1f1f;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 600px;
+    }
+    .profile-card h2 {
+      margin-bottom: 0.5rem;
+    }
+    .profile-card p {
+      margin: 0.5rem 0;
+    }
+    .section-title {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mi Cuenta</h1>
+
+  <div class="profile-card">
+    <h2 id="userName">Nombre del Usuario</h2>
+    <p id="userEmail">usuario@example.com</p>
+    <button onclick="cerrarSesion()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: crimson; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Cerrar Sesión</button>
+  </div>
+
+  <h2 class="section-title">Pedidos Recientes</h2>
+  <div class="profile-card">
+    <p>Pedido #2001 - Total: $49.99</p>
+  </div>
+
+  <h2 class="section-title">Métodos de Pago</h2>
+  <div class="profile-card">
+    <p>Tarjeta registrada: **** **** **** 5678</p>
+    <button style="margin-top: 0.5rem; padding: 0.5rem; background: steelblue; color: white; border: none; border-radius: 0.25rem;">Agregar Método de Pago</button>
+  </div>
+
+  <h2 class="section-title">Datos de Facturación</h2>
+  <div class="profile-card">
+    <p>RFC: XXXXXXXXXX</p>
+    <button style="margin-top: 0.5rem; padding: 0.5rem; background: steelblue; color: white; border: none; border-radius: 0.25rem;">Actualizar Datos</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      Swal.fire('Error', 'No has iniciado sesión', 'error').then(() => {
+        window.location.href = 'login.html';
+      });
+    } else {
+      const decoded = jwt_decode(token);
+      console.log('Token decodificado:', decoded);
+
+      document.getElementById('userName').textContent = decoded.name || 'Usuario Desconocido';
+      document.getElementById('userEmail').textContent = decoded.email || 'correo@desconocido.com';
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('token');
+      Swal.fire('Sesión cerrada', 'Hasta pronto.', 'info').then(() => {
+        window.location.href = 'login.html';
+      });
+    }
+  </script>
+
+</body>
+</html>
