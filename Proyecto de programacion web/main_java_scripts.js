@@ -23,9 +23,11 @@ document.querySelectorAll(".buy-button").forEach(button => {
 });
 
 // Search Functionality
-toggleSearchBar();
+// toggleSearchBar(); // Eliminar o comentar esta línea si no existe la función
 function setupSearchFunctionality() {
-    document.getElementById("search").addEventListener("input", function () {
+    const searchInput = document.getElementById("search");
+    if (!searchInput) return;
+    searchInput.addEventListener("input", function () {
         let searchValue = this.value.toLowerCase();
         document.querySelectorAll(".product-item").forEach(item => {
             let productName = item.querySelector("h3").textContent.toLowerCase();

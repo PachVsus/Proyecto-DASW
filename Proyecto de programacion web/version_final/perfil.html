@@ -67,25 +67,47 @@
   </div>
 
   <script>
-    const token = localStorage.getItem('token');
+  const API_BASE = 'http://127.0.0.1:5000';
 
+  async function loadUserProfile() {
+    const token = localStorage.getItem('token');
     if (!token) {
-      Swal.fire('Error', 'No has iniciado sesión', 'error').then(() => {
+      Swal.fire('No has iniciado sesión', '', 'warning').then(() => {
         window.location.href = 'login.html';
       });
-    } else {
-      const decoded = jwt_decode(token);
-      console.log('Token decodificado:', decoded);
-
-      document.getElementById('userName').textContent = decoded.name || 'Usuario Desconocido';
-      document.getElementById('userEmail').textContent = decoded.email || 'correo@desconocido.com';
+      return;
     }
 
-    function cerrarSesion() {
-      localStorage.removeItem('token');
-      Swal.fire('Sesión cerrada', 'Hasta pronto.', 'info').then(() => {
+    try {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error('Error al cargar perfil');
+      }
+
+      const user = await res.json();
+
+      // Insertar datos en el HTML
+      document.getElementById('userName').innerText = user.name || 'Sin nombre';
+      document.getElementById('userEmail').innerText = user.email || 'Sin correo';
+
+    } catch (err) {
+      Swal.fire('Error', 'No se pudo cargar tu perfil.', 'error').then(() => {
         window.location.href = 'login.html';
       });
+    }
+  }
+
+  window.onload = loadUserProfile;
+</script>
+  <script>
+    function cerrarSesion() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
     }
   </script>
 
