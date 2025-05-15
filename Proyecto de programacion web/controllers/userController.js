@@ -26,6 +26,18 @@ exports.login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
+    const register = (req, res) => {
+  // Lógica para registrar un usuario
+  res.status(201).send('Usuario registrado');
+};
+
+const login = (req, res) => {
+  // Lógica para iniciar sesión
+  res.status(200).send('Inicio de sesión exitoso');
+};
+
+export default { register, login };
+
     res.json({ token });
   } catch (err) {
     console.error(err);
